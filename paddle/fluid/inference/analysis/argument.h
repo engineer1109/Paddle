@@ -365,6 +365,11 @@ struct Argument {
                       MixedBlackList,
                       std::unordered_set<std::string>);
 
+  // custom device
+  DECL_ARGUMENT_FIELD(use_custom_device, UseCustomDevice, bool);
+  DECL_ARGUMENT_FIELD(custom_device_type, CustomDeviceType, std::string);
+  DECL_ARGUMENT_FIELD(custom_device_id, CustomDeviceId, int);
+
  private:
   std::unordered_set<std::string> valid_fields_;
 };

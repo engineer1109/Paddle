@@ -1223,6 +1223,15 @@ void AnalysisPredictor::PrepareArgument() {
   }
 #endif
 
+#ifdef PADDLE_WITH_CUSTOM_DEVICE
+  argument_.SetUseCustomDevice(config_.use_custom_device());
+  if (config_.use_custom_device()) {
+    LOG(INFO) << "CustomDevice is enabled";
+    argument_.SetCustomDeviceType(config_.custom_device_type());
+    argument_.SetCustomDeviceId(config_.custom_device_id());
+  }
+#endif
+
   auto *pass_builder = config_.pass_builder();
   if (model_precision_ != phi::DataType::FLOAT32) {
     LOG(INFO) << "Model is mixed precision type with " << model_precision_
