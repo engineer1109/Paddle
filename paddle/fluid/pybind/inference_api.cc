@@ -750,6 +750,9 @@ void BindAnalysisConfig(py::module *m) {
            &AnalysisConfig::EnableCustomDevice,
            py::arg("device_type"),
            py::arg("device_id") = 0)
+      .def("enable_custom_device_mixed",
+           &AnalysisConfig::EnableCustomDeviceMixed,
+           py::arg("precision") = AnalysisConfig::Precision::kFloat32)
       .def("enable_npu", &AnalysisConfig::EnableNpu, py::arg("device_id") = 0)
       .def("enable_ipu",
            &AnalysisConfig::EnableIpu,

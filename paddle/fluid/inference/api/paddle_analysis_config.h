@@ -377,6 +377,12 @@ struct PD_INFER_DECL AnalysisConfig {
   ///
   void EnableCustomDevice(const std::string& device_type, int device_id = 0);
   ///
+  /// \brief Enable CustomDevice mixed precision mode.
+  ///
+  /// \param precision_mode Precision the custom device to use.
+  ///
+  void EnableCustomDeviceMixed(Precision precision_mode);
+  ///
   /// \brief Turn on ONNXRuntime.
   ///
   void EnableONNXRuntime();
@@ -475,6 +481,13 @@ struct PD_INFER_DECL AnalysisConfig {
   /// \return string The custom device type.
   ///
   std::string custom_device_type() const { return custom_device_type_; }
+  /// \brief Get whether the custom device mixed preicsion is enabled.
+  ///
+  /// \return bool custom device mixed is enabled.
+  ///
+  bool enable_custom_device_mixed() const {
+    return enable_custom_device_mixed_;
+  }
   ///
   /// \brief Get the initial size in MB of the GPU memory pool.
   ///
@@ -1071,6 +1084,7 @@ struct PD_INFER_DECL AnalysisConfig {
   bool use_custom_device_{false};
   int custom_device_id_{0};
   std::string custom_device_type_;
+  bool enable_custom_device_mixed_{false};
 
   // ONNXRuntime related
   bool use_onnxruntime_{false};
