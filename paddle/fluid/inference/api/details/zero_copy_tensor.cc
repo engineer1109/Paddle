@@ -128,8 +128,25 @@ T *Tensor::mutable_data(PlaceType place) {
       return tensor->mutable_data<T>(paddle::platform::NPUPlace(device_));
     }
     default:
+      if (place_ >= PlaceType::kCUSTOM) {
+        auto device_type_id = static_cast<size_t>(place_) -
+                              static_cast<size_t>(PlaceType::kCUSTOM);
+        phi::CustomPlace custom_place(
+            phi::CustomRegisteredDeviceMap::Instance().GetGlobalDeviceType(
+                device_type_id),
+            device_);
+        auto &pool = phi::DeviceContextPool::Instance();
+        auto *dev_ctx =
+            static_cast<const phi::CustomContext *>(pool.Get(custom_place));
+        if (!tensor->initialized()) {
+          dev_ctx->Alloc<T>(tensor);
+        }
+        return tensor->data<T>();
+      }
       PADDLE_THROW(paddle::platform::errors::Unavailable(
-          "Only CPU / CUDA / XPU / NPU places is supported. The place `%d` is "
+          "Only CPU / CUDA / XPU / NPU / CUSTOM places is supported. The "
+          "place `%d` "
+          "is "
           "not supported.",
           static_cast<int>(place)));
       break;
@@ -150,6 +167,8 @@ T *Tensor::data(PlaceType *place, int *size) const {
     *place = PlaceType::kXPU;
   } else if (paddle::platform::is_npu_place(tensor->place())) {
     *place = PlaceType::kNPU;
+  } else if (tensor->place().GetType() == phi::AllocationType::CUSTOM) {
+    *place = PlaceType::kCUSTOM;
   } else {
     *place = PlaceType::kUNK;
   }
