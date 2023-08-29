@@ -176,11 +176,11 @@ std::shared_ptr<ProcessGroup::Task> ProcessGroupCustom::AllToAll(
     bool use_calc_stream) {
   const phi::DDim& out_dim = out_tensor->dims();
   const phi::DDim& in_dim = in_tensor.dims();
-  CheckSizeOnEachRank(out_dim, out_size_each_rank, size_);
-  CheckSizeOnEachRank(in_dim, in_size_each_rank, size_);
+  SizeOnEachRank(out_dim, out_size_each_rank, size_);
+  SizeOnEachRank(in_dim, in_size_each_rank, size_);
 
   // NOTE: Since `all_to_all` needs other processes' participation, it cannot
-  // simply be covered by static checks. Factors are set to 0 here to skip the
+  // simply be covered by static s. Factors are set to 0 here to skip the
   // shape check. Its shape check will be done by dynamic checks with
   // FLAGS_enable_xccl_dynamic_check.
   return RunFnInXCCLEnv(
@@ -815,7 +815,7 @@ std::shared_ptr<ProcessGroup::Task> ProcessGroupCustom::Broadcast(
       CommType::BROADCAST);
 }
 
-void CheckTensorsInDifferentDevices(
+inline void CheckTensorsInDifferentDevices(
     const std::vector<phi::DenseTensor>& tensors, const size_t num_devices) {
   PADDLE_ENFORCE_EQ(
       tensors.empty(),
