@@ -23,6 +23,7 @@
 #include "paddle/fluid/platform/device/xpu/xpu_info.h"
 #endif
 #include "paddle/fluid/platform/place.h"
+#include "paddle/phi/backends/stream.h"
 #include "paddle/phi/core/stream.h"
 
 #ifdef PADDLE_WITH_CUSTOM_DEVICE
@@ -83,6 +84,9 @@ class AllocatorFacade {
   bool IsStreamSafeCUDAAllocatorUsed();
   bool IsCUDAMallocAsyncAllocatorUsed();
 
+  phi::stream::stream_t GetStream(
+      const std::shared_ptr<Allocation>& allocation) const;
+
 #if defined(PADDLE_WITH_CUDA) || defined(PADDLE_WITH_HIP)
   // TODO(zhiqiu): change gpuStream_t to phi::Stream if needed.
   uint64_t Release(const platform::CUDAPlace& place, gpuStream_t stream);
@@ -91,7 +95,6 @@ class AllocatorFacade {
 
   TEST_API const std::shared_ptr<Allocator>& GetAllocator(
       const platform::Place& place, gpuStream_t stream);
-  gpuStream_t GetStream(const std::shared_ptr<Allocation>& allocation) const;
   void SetDefaultStream(const platform::CUDAPlace& place, gpuStream_t stream);
 #endif
 
@@ -105,10 +108,8 @@ class AllocatorFacade {
                    phi::stream::stream_t stream);
   void RecordStream(std::shared_ptr<Allocation> allocation,
                     phi::stream::stream_t stream);
-  TEST_API const std::shared_ptr<Allocator>& GetAllocator(
-      const platform::Place& place, phi::stream::stream_t stream);
-  phi::stream::stream_t GetStream(
-      const std::shared_ptr<Allocation>& allocation) const;
+  const std::shared_ptr<Allocator>& GetAllocator(const platform::Place& place,
+                                                 phi::stream::stream_t stream);
   void SetDefaultStream(const platform::CustomPlace& place,
                         phi::stream::stream_t stream);
 #endif
